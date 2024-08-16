@@ -27,6 +27,7 @@ main_pkg=(
     slurp
     python-requests
     pamixer
+    pipewire
     pavucontrol
     brightnessctl
     bluez
@@ -46,6 +47,8 @@ main_pkg=(
     curl
     wget
     dunst
+    libnotify
+    gnome-disk-utility
 )
 
 # Set some colors
@@ -61,7 +64,7 @@ install_software() {
         echo -e "$COK - $1 is already installed."
     else
         echo -en "$CNT - Now installing $1 "
-        yay -S  $1
+        yay -S --noconfirm  $1
         if yay -Q $1 &>> /dev/null ; then
             echo -e "\e[1A\e[K$COK - $1 was installed."
         else
@@ -123,7 +126,7 @@ for pkg in "${main_pkg[@]}"; do
 done
 
 # Check for Nvidia GPU
-if lspci -k | grep -A 2 -E "(VGA|3D)" | grep -iq nvidia; then
+if sudo lspci -k | grep -A 2 -E "(VGA|3D)" | grep -iq nvidia; then
     echo -e "$CNT - Nvidia GPU support setup stage, this may take a while..."
     for SOFTWR in "${nvidia_pkg[@]}"; do
         install_software "$SOFTWR"
