@@ -41,18 +41,28 @@ copy_files "$USERSC_DIR" "$LOCAL_BIN_DIR"
 
 echo -e "${NOTE} Installation and configuration completed."
 
+# Copy zsh  
+echo -e "${NOTE} Copying  zsh ..."
+cp .zshrc ~/
+
 
 DIR="/boot/loader/entries"
 
 for file in "$DIR"/*; do
     if [[ ! "$file" =~ fallback ]] && [[ -f "$file" ]]; then
         # Check if both 'quiet' and 'splash' are already in the options line
-        if ! grep -q "quiet" "$file" || ! grep -q "splash" "$file"; then
+        if ! sudo grep -q "quiet" "$file" || ! grep -q "splash" "$file"; then
             # Add 'quiet' and 'splash' if they don't exist
-            sed -i '/^options/s/$/ quiet splash/' "$file"
+            sudo sed -i '/^options/s/$/ quiet splash/' "$file"
             echo "Added 'quiet splash' to $file"
         else
             echo "'quiet' and 'splash' already present in $file"
         fi
     fi
 done
+
+
+
+
+#Set shell to zsh
+chsh -s /usr/bin/zsh

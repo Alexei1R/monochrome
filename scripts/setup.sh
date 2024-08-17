@@ -62,6 +62,7 @@ main_pkg=(
     yazi
     tree
     github-cli
+    starship
 )
 
 optional_pkg=(
