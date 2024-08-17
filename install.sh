@@ -42,3 +42,17 @@ copy_files "$USERSC_DIR" "$LOCAL_BIN_DIR"
 echo -e "${NOTE} Installation and configuration completed."
 
 
+DIR="/boot/loader/entries"
+
+for file in "$DIR"/*; do
+    if [[ ! "$file" =~ fallback ]] && [[ -f "$file" ]]; then
+        # Check if both 'quiet' and 'splash' are already in the options line
+        if ! grep -q "quiet" "$file" || ! grep -q "splash" "$file"; then
+            # Add 'quiet' and 'splash' if they don't exist
+            sed -i '/^options/s/$/ quiet splash/' "$file"
+            echo "Added 'quiet splash' to $file"
+        else
+            echo "'quiet' and 'splash' already present in $file"
+        fi
+    fi
+done
