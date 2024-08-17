@@ -59,6 +59,7 @@ main_pkg=(
     zoxide
     yazi
     tree
+    github-cli
 )
 
 
