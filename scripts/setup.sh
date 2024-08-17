@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Source the colors script
+source "./scripts/colors.sh"
 
 # Define package lists
 nvidia_pkg=(
@@ -62,7 +64,6 @@ main_pkg=(
     github-cli
 )
 
-
 optional_pkg=(
     cmake
     gcc
@@ -77,7 +78,6 @@ optional_pkg=(
     gst-plugins-ugly
     gst-libav
     ffmpeg
-    gstreamer
     gtk2
     gtk3
     libpng
@@ -85,24 +85,21 @@ optional_pkg=(
     openexr
     libtiff
     libwebp
-
 )
 
-./colors.sh
 INSTLOG="install.log"
-
 
 # Function to test for a package and if not found, attempts to install it
 install_software() {
-    if yay -Q $1 &>> /dev/null ; then
-        echo -e "$COK - $1 is already installed."
+    if yay -Q "$1" &> /dev/null; then
+        echo -e "${OK} - $1 is already installed."
     else
-        echo -en "$CNT - Now installing $1 "
-        yay -S --noconfirm  $1
-        if yay -Q $1 &>> /dev/null ; then
-            echo -e "\e[1A\e[K$COK - $1 was installed."
+        echo -en "${NOTE} - Now installing $1 "
+        yay -S --noconfirm "$1"
+        if yay -Q "$1" &> /dev/null; then
+            echo -e "\e[1A\e[K${OK} - $1 was installed."
         else
-            echo -e "\e[1A\e[K$CER - $1 install failed, please check the install.log"
+            echo -e "\e[1A\e[K${ERROR} - $1 install failed, please check the $INSTLOG"
             exit 1
         fi
     fi
@@ -123,12 +120,12 @@ prompt() {
 }
 
 if ! grep -qi "Arch" /etc/os-release; then
-    echo -e "${CER}This is not an Arch-based distribution. This will not work on other distros !!!!!!"
+    echo -e "${ERROR} This is not an Arch-based distribution. This will not work on other distros."
     exit 1  
 fi
 
 # Display the installation message
-echo -e "${CNT} MONOCHROME Installation Script"
+echo -e "${NOTE} MONOCHROME Installation Script"
 if prompt "Do you want to begin configuring the MONOCHROME setup?"; then
     echo "Starting the configuration..."
 else
@@ -136,42 +133,57 @@ else
     exit 0
 fi
 
+YAY_DIR="${HOME}/yay"
+
 # Check for package manager
-if ! command -v yay &> /dev/null; then  
-    echo -en "$CNT - Configuring yay."
-    git clone https://aur.archlinux.org/yay.git 
-    cd yay || exit 1
-    makepkg -si 
-    cd ..
-    if command -v yay &> /dev/null; then
-        echo -en "$CNT - yay configured."
-        echo -en "$CNT - Updating yay."
-        yay -Suy 
-        echo -e "\e[1A\e[K$COK - yay updated."
-    else
-        echo -e "\e[1A\e[K$CER - yay install failed, please check the install.log"
+if ! command -v yay &> /dev/null; then
+    echo -e "${CNT} - Configuring yay."
+
+    # Clone yay repository if it doesn't exist
+    if [ ! -d "$YAY_DIR" ]; then
+        git clone https://aur.archlinux.org/yay.git "$YAY_DIR"
+    fi
+
+    # Navigate to yay directory and build package
+    cd "$YAY_DIR" || { echo -e "${CER} - Failed to navigate to '$YAY_DIR'"; exit 1; }
+    if ! makepkg -si ; then
+        echo -e "${CER} - Failed to build and install yay. Check '$INSTLOG' for details."
         exit 1
     fi
+
+    # Navigate back to the original directory
+    cd - || exit 1
+
+    # Verify if yay is now available
+    if command -v yay &> /dev/null; then
+        echo -e "${CNT} - yay configured successfully."
+        echo -e "${CNT} - Updating yay."
+        yay -Suy &>> "$INSTLOG"
+        echo -e "\e[1A\e[K${COK} - yay updated."
+    else
+        echo -e "\e[1A\e[K${CER} - yay installation failed. Check '$INSTLOG' for details."
+        exit 1
+    fi
+else
+    echo -e "${COK} - yay is already installed."
 fi
+
 
 # Install main packages
 for pkg in "${main_pkg[@]}"; do
     install_software "$pkg"
 done
 
-
-echo -e "${CNT} DEV TOOLS"
+echo -e "${NOTE} DEV TOOLS"
 if prompt "Do you want to install all dev packages"; then
     for pkg in "${optional_pkg[@]}"; do
         install_software "$pkg"
     done
 fi
 
-
-
 # Check for Nvidia GPU
 if sudo lspci -k | grep -A 2 -E "(VGA|3D)" | grep -iq nvidia; then
-    echo -e "$CNT - Nvidia GPU support setup stage, this may take a while..."
+    echo -e "${NOTE} - Nvidia GPU support setup stage, this may take a while..."
     for SOFTWR in "${nvidia_pkg[@]}"; do
         install_software "$SOFTWR"
     done
@@ -179,7 +191,6 @@ if sudo lspci -k | grep -A 2 -E "(VGA|3D)" | grep -iq nvidia; then
     # Configure NVIDIA modules
     CONFIG_FILE="/etc/mkinitcpio.conf"
     MODPROBE_CONF="/etc/modprobe.d/nvidia.conf"
-
     NVIDIA_MODULES="nvidia nvidia_modeset nvidia_uvm nvidia_drm"
 
     # Check if NVIDIA modules are already in the MODULES array
@@ -194,22 +205,28 @@ if sudo lspci -k | grep -A 2 -E "(VGA|3D)" | grep -iq nvidia; then
     sudo grep "^MODULES=" "$CONFIG_FILE"
 
     # Create or edit /etc/modprobe.d/nvidia.conf
-    sudo echo "options nvidia_drm modeset=1 fbdev=1" | sudo tee "$MODPROBE_CONF" > /dev/null
+    echo "options nvidia_drm modeset=1 fbdev=1" | sudo tee "$MODPROBE_CONF" > /dev/null
 
     # Rebuild the initramfs
     echo "Rebuilding initramfs..."
     sudo mkinitcpio -P
 else
-    echo "$CER - No Nvidia GPU detected. Skipping Nvidia configuration."
+    echo -e "${ERROR} - No Nvidia GPU detected. Skipping Nvidia configuration."
 fi
 
 
-    echo "$CNT -Runing Post install script"
-./postinstall.sh
 
 
-# Prompt to reboot
-if prompt "Configuration complete. Do you want to reboot now?"; then
-    sudo reboot
+# Define the path to the postinstall script
+POSTINSTALL_SCRIPT="$(dirname "$0")/postinstall.sh"
+
+# Check if postinstall script exists and is executable
+if [ -x "$POSTINSTALL_SCRIPT" ]; then
+    echo -e "${CNT} - Running Post install script"
+    "$POSTINSTALL_SCRIPT"
+else
+    echo -e "${CER} - Post install script '$POSTINSTALL_SCRIPT' does not exist or is not executable."
+    exit 1
 fi
+
 
