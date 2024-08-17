@@ -42,7 +42,3 @@ copy_files "$USERSC_DIR" "$LOCAL_BIN_DIR"
 echo -e "${NOTE} Installation and configuration completed."
 
 
-# Prompt to reboot
-if prompt "Configuration complete. Do you want to reboot now?"; then
-    sudo reboot
-fi
