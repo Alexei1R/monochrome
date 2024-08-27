@@ -42,8 +42,8 @@ zinit cdreplay -q
 
 # Keybindings
 bindkey -e
-bindkey '^p' history-search-backward
-bindkey '^n' history-search-forward
+bindkey '^k' history-search-backward
+bindkey '^j' history-search-forward
 bindkey '^[w' kill-region
 
 # History
@@ -86,7 +86,7 @@ alias f=fzf
 alias i="sudo pacman -S"
 alias n="neofetch"
 alias u="sudo pacman -Syu"
-alias b="btop"
+alias b="./build.sh"
 alias m="mkdir"
 alias t="touch"
 alias r="rm -rf"
@@ -97,6 +97,7 @@ alias pf=figlet
 alias say=espeak
 alias fuck="espeak \" fuck of stupid person \""
 alias sd="cd ~ && cd \$(find * -type d | fzf)"
+alias l="ls -a"
 
 function yy() {
   local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
@@ -110,3 +111,7 @@ function yy() {
 bindkey -v
 bindkey '\ek' history-beginning-search-backward
 bindkey '\ej' history-beginning-search-forward
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

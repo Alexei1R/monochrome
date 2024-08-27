@@ -63,6 +63,9 @@ main_pkg=(
     tree
     github-cli
     starship
+    wl-clipboard
+    cliphist
+    zenity
 )
 
 optional_pkg=(
