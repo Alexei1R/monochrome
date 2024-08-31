@@ -17,6 +17,7 @@ nvidia_pkg=(
 main_pkg=(
     hyprland
     hyprpaper
+    hyprlock
     kitty
     jq
     swww
@@ -66,6 +67,10 @@ main_pkg=(
     wl-clipboard
     cliphist
     zenity
+    polkit-kde-agent
+    qt5-wayland
+    qt6-wayland
+    wireplumber
 )
 
 optional_pkg=(
