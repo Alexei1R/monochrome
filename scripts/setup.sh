@@ -72,6 +72,8 @@ main_pkg=(
     qt6-wayland
     wireplumber
     firefox
+    telegram-desktop
+    neovim
 )
 
 optional_pkg=(
