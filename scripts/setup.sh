@@ -71,6 +71,7 @@ main_pkg=(
     qt5-wayland
     qt6-wayland
     wireplumber
+    firefox
 )
 
 optional_pkg=(
@@ -94,6 +95,7 @@ optional_pkg=(
     openexr
     libtiff
     libwebp
+    boost
 )
 
 INSTLOG="install.log"
