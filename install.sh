@@ -22,14 +22,14 @@ copy_files() {
     cp -r "$src_dir/"* "$dest_dir/"
 }
 
-# Check if setup script exists and is executable
-if [ -x "$SETUP_SCRIPT" ]; then
-    echo -e "${NOTE} Running setup script..."
-    "$SETUP_SCRIPT"
-else
-    echo -e "${ERROR} Setup script '$SETUP_SCRIPT' does not exist or is not executable."
-    exit 1
-fi
+# # Check if setup script exists and is executable
+# if [ -x "$SETUP_SCRIPT" ]; then
+#     echo -e "${NOTE} Running setup script..."
+#     "$SETUP_SCRIPT"
+# else
+#     echo -e "${ERROR} Setup script '$SETUP_SCRIPT' does not exist or is not executable."
+#     exit 1
+# fi
 
 # Copy configuration files
 echo -e "${NOTE} Copying configuration files..."
@@ -46,23 +46,23 @@ echo -e "${NOTE} Copying  zsh ..."
 cp .zshrc ~/
 
 
-DIR="/boot/loader/entries"
-
-for file in "$DIR"/*; do
-    if [[ ! "$file" =~ fallback ]] && [[ -f "$file" ]]; then
-        # Check if both 'quiet' and 'splash' are already in the options line
-        if ! sudo grep -q "quiet" "$file" || ! grep -q "splash" "$file"; then
-            # Add 'quiet' and 'splash' if they don't exist
-            sudo sed -i '/^options/s/$/ quiet splash/' "$file"
-            echo "Added 'quiet splash' to $file"
-        else
-            echo "'quiet' and 'splash' already present in $file"
-        fi
-    fi
-done
-
-
-
-
-#Set shell to zsh
-chsh -s /usr/bin/zsh
+# DIR="/boot/loader/entries"
+#
+# for file in "$DIR"/*; do
+#     if [[ ! "$file" =~ fallback ]] && [[ -f "$file" ]]; then
+#         # Check if both 'quiet' and 'splash' are already in the options line
+#         if ! sudo grep -q "quiet" "$file" || ! grep -q "splash" "$file"; then
+#             # Add 'quiet' and 'splash' if they don't exist
+#             sudo sed -i '/^options/s/$/ quiet splash/' "$file"
+#             echo "Added 'quiet splash' to $file"
+#         else
+#             echo "'quiet' and 'splash' already present in $file"
+#         fi
+#     fi
+# done
+#
+#
+#
+#
+# #Set shell to zsh
+# chsh -s /usr/bin/zsh

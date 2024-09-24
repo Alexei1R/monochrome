@@ -35,5 +35,6 @@
   "telescope.nvim": { "branch": "0.1.x", "commit": "a0bbec21143c7bc5f8bb02e0005fa0b982edc026" },
   "todo-comments.nvim": { "branch": "main", "commit": "8f45f353dc3649cb9b44cecda96827ea88128584" },
   "tsc.nvim": { "branch": "main", "commit": "82c37ebfe45d30763db6f45b54e18f1e485bb52c" },
-  "typescript-tools.nvim": { "branch": "master", "commit": "f8c2e0b36b651c85f52ad5c5373ff8b07adc15a7" }
+  "typescript-tools.nvim": { "branch": "master", "commit": "f8c2e0b36b651c85f52ad5c5373ff8b07adc15a7" },
+  "vim-glsl": { "branch": "master", "commit": "40dd0b143ef93f3930a8a409f60c1bb85e28b727" }
 }
